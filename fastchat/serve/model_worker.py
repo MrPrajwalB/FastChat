@@ -64,8 +64,13 @@ def load_model(model_path, num_gpus, device, debug):
 
     if debug:
         print(f'Loading model ({device})...')
-    model = AutoModelForCausalLM.from_pretrained(
-        model_path, **kwargs)
+    
+    if device == "cpu-gptq":
+        from fastchat.serve.load_gptq_model import load_quantized
+        print("Loading GPTQ quantized model...")
+        model = load_quantized(model_path)
+    else:
+        model = AutoModelForCausalLM.from_pretrained(model_path, **kwargs)
 
     if debug:
         print('Done loading model')
